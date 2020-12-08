@@ -1,0 +1,144 @@
+
+@import url(https://fonts.googleapis.com/css?family=Righteous);
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+ul {
+  list-style: none; 
+}
+
+ul li::before {
+  content: "\2022"; 
+  color: #f7d596; 
+  font-weight: bold;
+  display: inline-block;
+  width: 1em; 
+  margin-left: -1em; 
+}
+
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+.sidenav a{
+
+  color: #a7d8b4;
+  font-size: 28px;
+}
+
+.sidenav p{
+  margin-left: 6px;
+
+
+}
+
+.main {
+  margin-left: 200px; 
+}
+
+.inTable {
+	max-width: 50px;
+	text-align: center;
+}
+ td {
+   border: 1px solid black;
+   padding: 5px;
+   text-align: center;
+
+}
+
+
+.note {
+	font-weight: bolder;
+	color: green;
+}
+body {
+	font-family: 'Righteous', serif;
+	font-size: 2em;
+	background-color:#f7d596;
+	margin-left: 180px;
+	margin-right: 0px;
+  width: 83%
+
+}
+
+h1 {
+	text-align: center;
+    color: #E8CEBF;
+}
+h1 {
+ 
+  font-family: 'Righteous';
+  color: #202020;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+}
+
+h1 span {
+  display: block;
+  margin: 11px 0 17px 0;
+  font-size: 70px;
+  line-height: 80px;
+  color: #111;
+  text-shadow: 0 5.36px 8.896px white,0 -2px 1px #fff;
+  letter-spacing: -1px;
+}
+
+@media (max-width: 1200px) {
+  body {
+    background: white;
+    margin-left: 0px;
+	margin-right: 0px;
+	}
+}
+input[type="button"] {
+	background-color: #E8CEBF;
+    border: 2px solid black;
+    color: black;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+input[type="number"],#problemType,.inTable
+{
+    font-size: 20px;
+}
+input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #printAns:focus {
+    background-color: white; 
+    color: black; 
+    border: 2px solid black;
+}
+#anotherQue {
+    font-weight: bold;
+	background-color: #d70c28;
+    border: 2px solid #d70c28;
+
+}
+#anotherQue:hover, #anotherQue:focus{
+	background-color: #E8CEBF; 
+    color: black; 
+    border: 2px solid #d70c28;
+}
+
+.result {
+	color:  #ee1139;
+}
+
+.steptext
+{
+font-family: 'Montserrat', sans-serif;
+font-size: 28px;
+
+}
