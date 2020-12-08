@@ -1,0 +1,426 @@
+<link rel="stylesheet" type="text/css" href="./style.css">
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hungarian Method</title>
+</head>
+<body>
+	<div id="mySidenav" class="sidenav">
+	<a href="./index.html" style="margin-left: 6px;">Home</a><br>
+	<p style="color: white">Code:</p>
+	<ul>
+  
+  <li><a href="./c_hung.html">C </a><br></li>
+  <li><a href="./cpp_hung.html">C++</a><br></li>
+  <li><a href="./py_hung.html">Python</a></li>
+  </ul>
+</div>
+
+<center>
+
+<h1 >C++ code</h1></center>
+<br>
+<div style="background: #4CAF60;
+  color: white;
+  font-size: 17px;
+  padding: 15px;
+  width: 1125px;
+  height: 1400px;
+  overflow: scroll;
+  border: 1px solid #ccc;
+  margin-left: 55px;margin-bottom: 120px; ">
+<pre><xmp style="">
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+#include <cfloat> 
+#include <cmath>  
+
+using namespace std;
+
+
+class HungarianAlgorithm
+{
+public:
+    HungarianAlgorithm();
+    double Solve(vector <vector<double> >& Main_matrix, vector<int>& Assignment);
+
+private:
+    void Optimal_assignment(int *assignment, double *cost, double *Main_matrix, int number_of_rows, int number_of_columns);
+    void Make_assignment(int *assignment, bool *Simplified_matrix, int number_of_rows, int number_of_columns);
+    void Find_assignment_cost(int *assignment, double *cost, double *Main_matrix, int number_of_rows);
+    void Column_coverer(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim);
+    void Column_counter(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim);
+    void Column_star_zeros_count(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim);
+    void Row_star_zeros_count(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim, int row, int column);
+    void Fresh_assignment(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim);
+};
+
+HungarianAlgorithm::HungarianAlgorithm(){}
+
+double HungarianAlgorithm::Solve(vector <vector<double> >& Main_matrix, vector<int>& Assignment)
+{
+    unsigned int Num_Rows = Main_matrix.size();
+    unsigned int Num_Columns = Main_matrix[0].size();
+
+    double *Main_matrixIn = new double[Num_Rows * Num_Columns];
+    int *assignment = new int[Num_Rows];
+    double cost = 0.0;
+
+    for (unsigned int i = 0; i < Num_Rows; i++)
+        for (unsigned int j = 0; j < Num_Columns; j++)
+            Main_matrixIn[i + Num_Rows * j] = Main_matrix[i][j];
+
+    
+    Optimal_assignment(assignment, &cost, Main_matrixIn, Num_Rows, Num_Columns);
+
+    Assignment.clear();
+    for (unsigned int r = 0; r < Num_Rows; r++)
+        Assignment.push_back(assignment[r]);
+
+    delete[] Main_matrixIn;
+    delete[] assignment;
+    return cost;
+}
+
+void HungarianAlgorithm::Optimal_assignment(int *assignment, double *cost, double *Main_matrixIn, int number_of_rows, int number_of_columns)
+{
+    double *Main_matrix, *Main_matrixTemp, *Main_matrixEnd, *columnEnd, value, minValue;
+    bool *covered_columns, *covered_rows, *Simplified_matrix, *newSimplified_matrix, *primeMatrix;
+    int Number_of_elements, minDim, row, column;
+
+    *cost = 0;
+    for (row = 0; row<number_of_rows; row++)
+        assignment[row] = -1;
+    Number_of_elements = number_of_rows * number_of_columns;
+    Main_matrix = (double *)malloc(Number_of_elements * sizeof(double));
+    Main_matrixEnd = Main_matrix + Number_of_elements;
+
+    for (row = 0; row<Number_of_elements; row++)
+    {
+        value = Main_matrixIn[row];
+
+        Main_matrix[row] = value;
+    }
+
+
+
+    covered_columns = (bool *)calloc(number_of_columns, sizeof(bool));
+    covered_rows = (bool *)calloc(number_of_rows, sizeof(bool));
+    Simplified_matrix = (bool *)calloc(Number_of_elements, sizeof(bool));
+    primeMatrix = (bool *)calloc(Number_of_elements, sizeof(bool));
+    newSimplified_matrix = (bool *)calloc(Number_of_elements, sizeof(bool)); /* used in Row_star_zeros_count */
+
+
+    if (number_of_rows <= number_of_columns)
+    {
+        minDim = number_of_rows;
+
+        for (row = 0; row<number_of_rows; row++)
+        {
+            /* find the smallest element in the row */
+            Main_matrixTemp = Main_matrix + row;
+            minValue = *Main_matrixTemp;
+            Main_matrixTemp += number_of_rows;
+            while (Main_matrixTemp < Main_matrixEnd)
+            {
+                value = *Main_matrixTemp;
+                if (value < minValue)
+                    minValue = value;
+                Main_matrixTemp += number_of_rows;
+            }
+
+            /* subtract the smallest element from each element of the row */
+            Main_matrixTemp = Main_matrix + row;
+            while (Main_matrixTemp < Main_matrixEnd)
+            {
+                *Main_matrixTemp -= minValue;
+                Main_matrixTemp += number_of_rows;
+            }
+        }
+
+        for (row = 0; row<number_of_rows; row++)
+            for (column = 0; column<number_of_columns; column++)
+                if (fabs(Main_matrix[row + number_of_rows*column]) < DBL_EPSILON)
+                    if (!covered_columns[column])
+                    {
+                        Simplified_matrix[row + number_of_rows*column] = true;
+                        covered_columns[column] = true;
+                        break;
+                    }
+    }
+    else 
+    {
+        minDim = number_of_columns;
+
+        for (column = 0; column<number_of_columns; column++)
+        {
+            /* find the smallest element in the column */
+            Main_matrixTemp = Main_matrix + number_of_rows*column;
+            columnEnd = Main_matrixTemp + number_of_rows;
+
+            minValue = *Main_matrixTemp++;
+            while (Main_matrixTemp < columnEnd)
+            {
+                value = *Main_matrixTemp++;
+                if (value < minValue)
+                    minValue = value;
+            }
+
+            /* subtract the smallest element from each element of the column */
+            Main_matrixTemp = Main_matrix + number_of_rows*column;
+            while (Main_matrixTemp < columnEnd)
+                *Main_matrixTemp++ -= minValue;
+        }
+
+        for (column = 0; column<number_of_columns; column++)
+            for (row = 0; row<number_of_rows; row++)
+                if (fabs(Main_matrix[row + number_of_rows*column]) < DBL_EPSILON)
+                    if (!covered_rows[row])
+                    {
+                        Simplified_matrix[row + number_of_rows*column] = true;
+                        covered_columns[column] = true;
+                        covered_rows[row] = true;
+                        break;
+                    }
+        for (row = 0; row<number_of_rows; row++)
+            covered_rows[row] = false;
+
+    }
+
+    Column_counter(assignment, Main_matrix, Simplified_matrix, newSimplified_matrix, primeMatrix, covered_columns, covered_rows, number_of_rows, number_of_columns, minDim);
+    Find_assignment_cost(assignment, cost, Main_matrixIn, number_of_rows);
+
+
+    free(Main_matrix);
+    free(covered_columns);
+    free(covered_rows);
+    free(Simplified_matrix);
+    free(primeMatrix);
+    free(newSimplified_matrix);
+
+    return;
+}
+
+void HungarianAlgorithm::Make_assignment(int *assignment, bool *Simplified_matrix, int number_of_rows, int number_of_columns)
+{
+    int row, column;
+
+    for (row = 0; row<number_of_rows; row++)
+        for (column = 0; column<number_of_columns; column++)
+            if (Simplified_matrix[row + number_of_rows*column])
+            {
+#ifdef ONE_INDEXING
+                assignment[row] = column + 1;
+#else
+                assignment[row] = column;
+#endif
+                break;
+            }
+}
+
+
+void HungarianAlgorithm::Find_assignment_cost(int *assignment, double *cost, double *Main_matrix, int number_of_rows)
+{
+    int row, column;
+
+    for (row = 0; row<number_of_rows; row++)
+    {
+        column = assignment[row];
+        if (column >= 0)
+            *cost += Main_matrix[row + number_of_rows*column];
+    }
+}
+
+void HungarianAlgorithm::Column_coverer(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim)
+{
+    bool *Simplified_matrixTemp, *columnEnd;
+    int column;
+
+    /* cover every column containing a starred zero */
+    for (column = 0; column<number_of_columns; column++)
+    {
+        Simplified_matrixTemp = Simplified_matrix + number_of_rows*column;
+        columnEnd = Simplified_matrixTemp + number_of_rows;
+        while (Simplified_matrixTemp < columnEnd){
+            if (*Simplified_matrixTemp++)
+            {
+                covered_columns[column] = true;
+                break;
+            }
+        }
+    }
+
+    Column_counter(assignment, Main_matrix, Simplified_matrix, newSimplified_matrix, primeMatrix, covered_columns, covered_rows, number_of_rows, number_of_columns, minDim);
+}
+
+
+void HungarianAlgorithm::Column_counter(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim)
+{
+    int column, Number_of_covered_columns;
+
+    /* count covered columns */
+    Number_of_covered_columns = 0;
+    for (column = 0; column<number_of_columns; column++)
+        if (covered_columns[column])
+            Number_of_covered_columns++;
+
+    if (Number_of_covered_columns == minDim)
+    {
+        Make_assignment(assignment, Simplified_matrix, number_of_rows, number_of_columns);
+    }
+    else
+    {
+        Column_star_zeros_count(assignment, Main_matrix, Simplified_matrix, newSimplified_matrix, primeMatrix, covered_columns, covered_rows, number_of_rows, number_of_columns, minDim);
+    }
+
+}
+
+void HungarianAlgorithm::Column_star_zeros_count(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim)
+{
+    bool zerosFound;
+    int row, column, SimpColumn;
+
+    zerosFound = true;
+    while (zerosFound)
+    {
+        zerosFound = false;
+        for (column = 0; column<number_of_columns; column++)
+            if (!covered_columns[column])
+                for (row = 0; row<number_of_rows; row++)
+                    if ((!covered_rows[row]) && (fabs(Main_matrix[row + number_of_rows*column]) < DBL_EPSILON))
+                    {
+                        primeMatrix[row + number_of_rows*column] = true;
+
+                        for (SimpColumn = 0; SimpColumn<number_of_columns; SimpColumn++)
+                            if (Simplified_matrix[row + number_of_rows*SimpColumn])
+                                break;
+
+                        if (SimpColumn == number_of_columns) 
+                        {
+                            Row_star_zeros_count(assignment, Main_matrix, Simplified_matrix, newSimplified_matrix, primeMatrix, covered_columns, covered_rows, number_of_rows, number_of_columns, minDim, row, column);
+                            return;
+                        }
+                        else
+                        {
+                            covered_rows[row] = true;
+                            covered_columns[SimpColumn] = false;
+                            zerosFound = true;
+                            break;
+                        }
+                    }
+    }
+
+    Fresh_assignment(assignment, Main_matrix, Simplified_matrix, newSimplified_matrix, primeMatrix, covered_columns, covered_rows, number_of_rows, number_of_columns, minDim);
+}
+
+void HungarianAlgorithm::Row_star_zeros_count(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim, int row, int column)
+{
+    int n, SimpRow, SimpColumn, PrimeRow, PrimeColumn;
+    int Number_of_elements = number_of_rows*number_of_columns;
+
+    for (n = 0; n<Number_of_elements; n++)
+        newSimplified_matrix[n] = Simplified_matrix[n];
+
+    
+    newSimplified_matrix[row + number_of_rows*column] = true;
+    SimpColumn = column;
+    for (SimpRow = 0; SimpRow<number_of_rows; SimpRow++)
+        if (Simplified_matrix[SimpRow + number_of_rows*SimpColumn])
+            break;
+
+    while (SimpRow<number_of_rows)
+    {
+        newSimplified_matrix[SimpRow + number_of_rows*SimpColumn] = false;
+
+        PrimeRow = SimpRow;
+        for (PrimeColumn = 0; PrimeColumn<number_of_columns; PrimeColumn++)
+            if (primeMatrix[PrimeRow + number_of_rows*PrimeColumn])
+                break;
+
+        
+        newSimplified_matrix[PrimeRow + number_of_rows*PrimeColumn] = true;
+
+        
+        SimpColumn = PrimeColumn;
+        for (SimpRow = 0; SimpRow<number_of_rows; SimpRow++)
+            if (Simplified_matrix[SimpRow + number_of_rows*SimpColumn])
+                break;
+    }
+
+    for (n = 0; n<Number_of_elements; n++)
+    {
+        primeMatrix[n] = false;
+        Simplified_matrix[n] = newSimplified_matrix[n];
+    }
+    for (n = 0; n<number_of_rows; n++)
+        covered_rows[n] = false;
+
+    Column_coverer(assignment, Main_matrix, Simplified_matrix, newSimplified_matrix, primeMatrix, covered_columns, covered_rows, number_of_rows, number_of_columns, minDim);
+}
+
+void HungarianAlgorithm::Fresh_assignment(int *assignment, double *Main_matrix, bool *Simplified_matrix, bool *newSimplified_matrix, bool *primeMatrix, bool *covered_columns, bool *covered_rows, int number_of_rows, int number_of_columns, int minDim)
+{
+    double h, value;
+    int row, column;
+
+    /* find smallest uncovered element h */
+    h = DBL_MAX;
+    for (row = 0; row<number_of_rows; row++)
+        if (!covered_rows[row])
+            for (column = 0; column<number_of_columns; column++)
+                if (!covered_columns[column])
+                {
+                    value = Main_matrix[row + number_of_rows*column];
+                    if (value < h)
+                        h = value;
+                }
+
+    /* add h to each covered row */
+    for (row = 0; row<number_of_rows; row++)
+        if (covered_rows[row])
+            for (column = 0; column<number_of_columns; column++)
+                Main_matrix[row + number_of_rows*column] += h;
+
+    /* subtract h from each uncovered column */
+    for (column = 0; column<number_of_columns; column++)
+        if (!covered_columns[column])
+            for (row = 0; row<number_of_rows; row++)
+                Main_matrix[row + number_of_rows*column] -= h;
+
+    Column_star_zeros_count(assignment, Main_matrix, Simplified_matrix, newSimplified_matrix, primeMatrix, covered_columns, covered_rows, number_of_rows, number_of_columns, minDim);
+}
+
+int main()
+{
+
+vector< vector<double> > Cost_matrix = {
+    {82, 77, 51},
+    {83, 37, 69},
+    {69, 49, 5}
+};
+
+
+HungarianAlgorithm HungAlgo;
+vector<int> assignment;
+
+double cost = HungAlgo.Solve(Cost_matrix, assignment);
+
+for (unsigned int x = 0; x < Cost_matrix.size(); x++)
+    cout <<"Row - "<< x+1 << ", Element - " << assignment[x]+1 << "\n";
+
+    return 0;
+}
+</xmp></pre>
+</div>
+ <footer style="background-color: #111;width: 100%;bottom:0;padding-left: 50px;padding-bottom: 15px;margin-bottom: -20px;padding-top: 5px;padding-right: 30px">
+            <div style="float: right;margin-top: 15px;margin-right: 10px">
+          <script type="text/javascript" src="https://freehitcounters.org/count/7xpv"></script><br>
+            <a href='http://besucherzaehler.co'>kostenlose Besucherzähler</a> <script type='text/javascript' src='https://www.whomania.com/ctr?id=8008c93c998d407c417156f5b2eaad1e0160c444'></script></div>
+<p style="color: white;font-family: helvetica; font-size: 20px;color: #a7d8b4 ">Designed and developed by:</p>
+<p style="color: white;font-family: helvetica; font-size: 20px;color: #f7d596">Shubh Todi <br>Dr. Oswald C </p>
+        <p style="color: white;font-family: helvetica; font-size: 20px;">Department of CSE, Vellore Institute of Technology, Chennai</p>
+        </footer>
+</body>
+</html>
