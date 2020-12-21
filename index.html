@@ -24,7 +24,7 @@
 
 
 
-    <div id="main" style="	background-color: #f7d596;padding-left: 50px;padding-right: 30px ;margin-top: -110px;margin-bottom: 50px;padding-bottom: 20px">
+    <div id="main" style="	background-color: #f7d596;padding-left: 50px;padding-right: 30px ;margin-bottom: 50px; margin-top: -50px;padding-bottom: 20px">
         <div>
             <h1> <span>Hungarian&nbsp; Method Visualizer</span> </h1><br/>            
         </div>
@@ -121,44 +121,43 @@
 					var k=0;
 	            	for (var i = 0; i < block; i++) 
 	            	{
-	            		for (var j = 0; j < block; j++)
-	            		 {
+	            		for (var j = 0; j < block; j++) 
+	            		{
 	            			if(dummy=="col") 
 	            			{
 	            				if(j>(cols-1))
 	            				 {
 	            					data[i][j]=0;
+	            				 }
+	            				else 
+	            				{
+	            					if(($("#data"+k).val())=="") 
+	            					{
+	            							data[i][j]=0;
+	            						}
+	            						else 
+	            						{
+	            							data[i][j]=$("#data"+k).val();
+	            						}
+	            				}	            					
+	            				k++;
+	            			}
+	            		
+	            		
+	            			else if(dummy=="row") 
+	            			{
+	            				if(($("#data"+k).val())==null) 
+	            				{
+	            					data[i][j]=0;
 	            				}
 	            				else 
 	            				{
-	            					if($("#data"+k).val()=="-") {
-	            						data[i][j]=10001;
-	            					}
-	            					else 
+	            					if(($("#data"+k).val())=="") 
 	            					{
-	            						if(($("#data"+k).val())=="") {
 	            							data[i][j]=0;
 	            						}
-	            						else
-	            						 {
-	            							data[i][j]=$("#data"+k).val();
-	            						}
-	            					}	            					
-	            					k++;
-	            				}
-	            		
-	            		
-	            			}
-	            			else if(dummy=="row") {
-	            				if(($("#data"+k).val())==null) {
-	            					data[i][j]=0;
-	            				}else {
-	            					if($("#data"+k).val()=="-") {
-	            						data[i][j]=10001;
-	            					}else {
-	            						if(($("#data"+k).val())=="") {
-	            							data[i][j]=0;
-	            						}else {
+	            						else 
+	            						{
 	            							data[i][j]=$("#data"+k).val();
 	            						}
 	            						
@@ -167,7 +166,6 @@
 	            				}
 		            		}
 	            		}
-	            	}
 	            	
 
 
@@ -268,18 +266,13 @@
 	            		table='<tr id=\"row3'+i+'\"></tr>';
 	            		$("#result").append(table);
 	            		for (var j = 0; j < block; j++) {
-	            			var printValue;
-	            			if(data[i][j]>10000) {
-	            				printValue="-";
-	            				table='<td>'+printValue+'</td>';
-	            			}else {
-	            				table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
-	            			}	       
+	            		
+	            				
+	            			table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
+	            			       
 	            			$("#row3"+i).append(table);
 	            		}
 	            	}
-
-
 	            	table='</table>';
 	            	$("#result").append(table);
 
@@ -309,18 +302,12 @@
 	            		table='<tr id=\"row4'+i+'\"></tr>';
 	            		$("#result").append(table);
 	            		for (var j = 0; j < block; j++) {
-	            			var printValue;
-	            			if(data[i][j]>10000) {
-	            				printValue="-";
-	            				table='<td>'+printValue+'</td>';
-	            			}else {
+	            			
 	            				table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
-	            			}	       
+	            			    
 	            			$("#row4"+i).append(table);
 	            		}
 	            	}
-
-
 	            	table='</table>';
 	            	$("#result").append(table);
 
@@ -389,8 +376,8 @@
 							for(var j = 0; j < block; j++) {
 								if(parseInt(data[i][j])==0) {
 									if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
-										//alert(cntZero[i]);
-										if(parseInt(cntZero[i])==1) {
+								
+										if(parseInt(cntZero[i])==1 || parseInt(cntZero[i])==2 ) {
 											assignmentTable[i][j]=1;
 											rowF[i]=-1;
 											colF[j]=-1;
@@ -409,12 +396,14 @@
 							}
 						}
 
+						
+
 						for(var i = 0; i < block; i++) {
 							for(var j = 0; j < block; j++) {
 								if(parseInt(data[i][j])==0) {
 									if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
 										if(parseInt(cntZero[i])==2) {
-											if(parseInt(cntZeroCol[j])==1) {
+											if(parseInt(cntZeroCol[j])==2 || parseInt(cntZeroCol[j])>=2 ) {
 												assignmentTable[i][j]=1;
 												rowF[i]=-1;
 												colF[j]=-1;
@@ -434,62 +423,14 @@
 							}
 						}
 
-						for(var i = 0; i < block; i++) {
-							for(var j = 0; j < block; j++) {
-								if(parseInt(data[i][j])==0) {
-									if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
-										if(parseInt(cntZero[i])==2) {
-											if(parseInt(cntZeroCol[j])==2) {
-												assignmentTable[i][j]=1;
-												rowF[i]=-1;
-												colF[j]=-1;
-												cntZero[i]=0;
-												cntZeroCol[j]=0;
-												for (var k = 0; k < block; k++) {
-													if(parseInt(data[k][j]==0)) {
-														if(parseInt(cntZero[k])!=0) {
-															cntZero[k]--;
-														}													
-													}
-												}
-											}	
-										}
-									}
-								}
-							}
-						}
-
-						for(var i = 0; i < block; i++) {
-							for(var j = 0; j < block; j++) {
-								if(parseInt(data[i][j])==0) {
-									if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
-										if(parseInt(cntZero[i])==2) {
-											if(parseInt(cntZeroCol[j])>=2) {
-												assignmentTable[i][j]=1;
-												rowF[i]=-1;
-												colF[j]=-1;
-												cntZero[i]=0;
-												cntZeroCol[j]=0;
-												for (var k = 0; k < block; k++) {
-													if(parseInt(data[k][j]==0)) {
-														if(parseInt(cntZero[k])!=0) {
-															cntZero[k]--;
-														}													
-													}
-												}
-											}	
-										}
-									}
-								}
-							}
-						}
+						
 
 						for(var i = 0; i < block; i++) {
 							for(var j = 0; j < block; j++) {
 								if(parseInt(data[i][j])==0) {
 									if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
 										if(parseInt(cntZero[i])>=2) {
-											if(parseInt(cntZeroCol[j])==1) {
+											if(parseInt(cntZeroCol[j])==1 || parseInt(cntZeroCol[j])==2) {
 												assignmentTable[i][j]=1;
 												rowF[i]=-1;
 												colF[j]=-1;
@@ -509,31 +450,7 @@
 							}
 						}
 
-						for(var i = 0; i < block; i++) {
-							for(var j = 0; j < block; j++) {
-								if(parseInt(data[i][j])==0) {
-									if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
-										if(parseInt(cntZero[i])>=2) {
-											if(parseInt(cntZeroCol[j])==2) {
-												assignmentTable[i][j]=1;
-												rowF[i]=-1;
-												colF[j]=-1;
-												cntZero[i]=0;
-												cntZeroCol[j]=0;
-												for (var k = 0; k < block; k++) {
-													if(parseInt(data[k][j]==0)) {
-														if(parseInt(cntZero[k])!=0) {
-															cntZero[k]--;
-														}													
-													}
-												}
-											}											
-										}
-									}
-								}
-							}
-						}
-
+						
 
 						for(var i = 0; i < block; i++) {
 							for(var j = 0; j < block; j++) {
@@ -638,24 +555,22 @@
 							for (var i = 0; i < block; i++) {
 								for (var j = 0; j < block; j++) {
 									var x = parseInt(markedRows[i]);
-									if(x==-1) {
-									}else {
+								
 										if(parseInt(data[x][j])==0) {
 											markedCols[j]=j;
 										}
-									}
+									
 								}
 							}							
 
 							for (var i = 0; i < block; i++) {
 								for (var j = 0; j < block; j++) {
 									var x = parseInt(markedCols[i]);
-									if(x==-1) {
-									}else {
+									
 										if(parseInt(assignmentTable[j][x])==1) {
 											markedRows[j]=j;
 										}
-									}
+									
 								}
 							}		
 
@@ -675,7 +590,7 @@
 							}
 
 							var cntTable=1;
-							var smallUncover=10000;
+							var smallUncover=1000;
 
 							outer2 :
 							for (var i = 0; i < block; i++) {
@@ -691,7 +606,7 @@
 							for (var i = 0; i < block; i++) {
 								for (var j = 0; j < block; j++) {
 									if(parseInt(coveredRows[i])==1 && parseInt(coveredCols[j])==1) {
-										
+						
 										data[i][j]=data[i][j]+smallUncover;
 									}else if(parseInt(coveredRows[i])==0 && parseInt(coveredCols[j])==0) {
 									
@@ -699,7 +614,6 @@
 									}
 								}
 							}
-
 
 
 		            		calAssignmentTable();
@@ -715,18 +629,12 @@
 			            		table='<tr id=\"'+id+i+'\"></tr>';
 			            		$("#result").append(table);
 			            		for (var j = 0; j < block; j++) {
-			            			var printValue;
-			            			if(data[i][j]>10000) {
-			            				printValue="-";
-			            				table='<td>'+printValue+'</td>';
-			            			}else {
+			            			
 			            				table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
-			            			}	       
+			            			    
 			            			$("#"+id+i).append(table);
 			            		}
 		            		}
-
-
 		            		table='</table>';
 		            		$("#result").append(table);
 
@@ -747,8 +655,8 @@
         </div> 
         <footer style="background-color: #111;width: 100%;bottom:0;padding-left: 50px;padding-bottom: 15px;margin-bottom: -20px;padding-top: 5px;padding-right: 30px">
         	<div style="float: right;margin-top: 15px;margin-right: 10px">
-          <script type="text/javascript" src="https://freehitcounters.org/count/7xpv"></script><br>
- 			<a href='http://besucherzaehler.co'>kostenlose Besucherzähler</a> <script type='text/javascript' src='https://www.whomania.com/ctr?id=8008c93c998d407c417156f5b2eaad1e0160c444'></script></div>
+          <script type="text/javascript" src="https://freehitcounters.org/count/7zf6"></script><br>
+ <a href='https://xn--besucherzhler-counter-e2b.com/'>https://Besucherzähler-counter.com</a> <script type='text/javascript' src='https://whomania.com/ctr?id=d3db2ac44039252e6057a51f7d3ef1253b0dc73d'></script></div>
 <p style="color: white;font-family: helvetica; font-size: 20px;color: #a7d8b4 ">Designed and developed by:</p>
 <p style="color: white;font-family: helvetica; font-size: 20px;color: #f7d596">Shubh Todi <br>Dr. Oswald C </p>
 		<p style="color: white;font-family: helvetica; font-size: 20px;">Department of CSE, Vellore Institute of Technology, Chennai</p>
