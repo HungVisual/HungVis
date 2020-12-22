@@ -215,45 +215,33 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
           }
 
           var k=0;
-                for (var i = 0; i < block; i++) 
-                {
-                  for (var j = 0; j < block; j++) 
-                  {
-                    if(dummy=="col") 
-                    {
-                      if(j>(cols-1))
-                       {
+                for (var i = 0; i < block; i++) {
+                  for (var j = 0; j < block; j++) {
+                    if(dummy=="col") {
+                      if(j>(cols-1)) {
                         data[i][j]=0;
-                       }
-                      else 
-                      {
-                        if(($("#data"+k).val())=="") 
-                        {
+                      }else {
+                        if($("#data"+k).val()=="-") {
+                          data[i][j]=100000;
+                        }else {
+                          if(($("#data"+k).val())=="") {
                             data[i][j]=0;
-                          }
-                          else 
-                          {
+                          }else {
                             data[i][j]=$("#data"+k).val();
                           }
-                      }                       
-                      k++;
-                    }
-                  
-                  
-                    else if(dummy=="row") 
-                    {
-                      if(($("#data"+k).val())==null) 
-                      {
-                        data[i][j]=0;
+                        }                       
+                        k++;
                       }
-                      else 
-                      {
-                        if(($("#data"+k).val())=="") 
-                        {
+                    }else if(dummy=="row") {
+                      if(($("#data"+k).val())==null) {
+                        data[i][j]=0;
+                      }else {
+                        if($("#data"+k).val()=="-") {
+                          data[i][j]=10001;
+                        }else {
+                          if(($("#data"+k).val())=="") {
                             data[i][j]=0;
-                          }
-                          else 
-                          {
+                          }else {
                             data[i][j]=$("#data"+k).val();
                           }
                           
@@ -262,7 +250,7 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
                       }
                     }
                   }
-                
+                }
 
 
                 originalData=new Array(block);
@@ -285,8 +273,12 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
                   table='<tr id=\"row2'+i+'\"></tr>';
                   $("#result").append(table);
                   for (var j = 0; j < block; j++) {
-                    
-                      table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
+                    var printValue;
+                    if(data[i][j]>10000) {
+                      printValue="-";
+                      table='<td>'+printValue+'</td>';
+                    }else {
+                      table='<td style="color: #f3630c;">'+data[i][j]+'</td>';}
                                         
                     $("#row2"+i).append(table);
                   }
@@ -320,8 +312,12 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
                     table='<tr id=\"rowCon'+i+'\"></tr>';
                     $("#result").append(table);
                     for (var j = 0; j < block; j++) {
-                      
-                        table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
+                      var printValue;
+                      if(data[i][j]>10000) {
+                        printValue="-";
+                        table='<td>'+printValue+'</td>';
+                      }else {
+                        table='<td style="color: #f3630c;">'+data[i][j]+'</td>';}
                             
                       $("#rowCon"+i).append(table);
                     }
@@ -363,8 +359,12 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
                   $("#result").append(table);
                   for (var j = 0; j < block; j++) {
                   
-                      
-                    table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
+                      var printValue;
+                    if(data[i][j]>10000) {
+                      printValue="-";
+                      table='<td>'+printValue+'</td>';
+                    }else {
+                    table='<td style="color: #f3630c;">'+data[i][j]+'</td>';}
                            
                     $("#row3"+i).append(table);
                   }
@@ -398,8 +398,12 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
                   table='<tr id=\"row4'+i+'\"></tr>';
                   $("#result").append(table);
                   for (var j = 0; j < block; j++) {
-                    
-                      table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
+                    var printValue;
+                    if(data[i][j]>10000) {
+                      printValue="-";
+                      table='<td>'+printValue+'</td>';
+                    }else {
+                      table='<td style="color: #f3630c;">'+data[i][j]+'</td>';}
                         
                     $("#row4"+i).append(table);
                   }
@@ -440,7 +444,13 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
                     }
                   }
 
-                  
+                  for (var i = 0; i < block; i++) {
+                    for (var j = 0; j < block; j++) {
+                      if(parseInt(data[i][j])>10000) {
+                        restrictPosition[i][j]=1;
+                      }
+                    }
+                  }
 
             cntZero=new Array(block);
             cntZeroCol=new Array(block);
@@ -472,8 +482,8 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
               for(var j = 0; j < block; j++) {
                 if(parseInt(data[i][j])==0) {
                   if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
-                
-                    if(parseInt(cntZero[i])==1 || parseInt(cntZero[i])==2 ) {
+                    //alert(cntZero[i]);
+                    if(parseInt(cntZero[i])==1) {
                       assignmentTable[i][j]=1;
                       rowF[i]=-1;
                       colF[j]=-1;
@@ -492,14 +502,12 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
               }
             }
 
-            
-
             for(var i = 0; i < block; i++) {
               for(var j = 0; j < block; j++) {
                 if(parseInt(data[i][j])==0) {
                   if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
                     if(parseInt(cntZero[i])==2) {
-                      if(parseInt(cntZeroCol[j])==2 || parseInt(cntZeroCol[j])>=2 ) {
+                      if(parseInt(cntZeroCol[j])==1) {
                         assignmentTable[i][j]=1;
                         rowF[i]=-1;
                         colF[j]=-1;
@@ -519,14 +527,62 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
               }
             }
 
-            
+            for(var i = 0; i < block; i++) {
+              for(var j = 0; j < block; j++) {
+                if(parseInt(data[i][j])==0) {
+                  if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
+                    if(parseInt(cntZero[i])==2) {
+                      if(parseInt(cntZeroCol[j])==2) {
+                        assignmentTable[i][j]=1;
+                        rowF[i]=-1;
+                        colF[j]=-1;
+                        cntZero[i]=0;
+                        cntZeroCol[j]=0;
+                        for (var k = 0; k < block; k++) {
+                          if(parseInt(data[k][j]==0)) {
+                            if(parseInt(cntZero[k])!=0) {
+                              cntZero[k]--;
+                            }                         
+                          }
+                        }
+                      } 
+                    }
+                  }
+                }
+              }
+            }
+
+            for(var i = 0; i < block; i++) {
+              for(var j = 0; j < block; j++) {
+                if(parseInt(data[i][j])==0) {
+                  if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
+                    if(parseInt(cntZero[i])==2) {
+                      if(parseInt(cntZeroCol[j])>=2) {
+                        assignmentTable[i][j]=1;
+                        rowF[i]=-1;
+                        colF[j]=-1;
+                        cntZero[i]=0;
+                        cntZeroCol[j]=0;
+                        for (var k = 0; k < block; k++) {
+                          if(parseInt(data[k][j]==0)) {
+                            if(parseInt(cntZero[k])!=0) {
+                              cntZero[k]--;
+                            }                         
+                          }
+                        }
+                      } 
+                    }
+                  }
+                }
+              }
+            }
 
             for(var i = 0; i < block; i++) {
               for(var j = 0; j < block; j++) {
                 if(parseInt(data[i][j])==0) {
                   if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
                     if(parseInt(cntZero[i])>=2) {
-                      if(parseInt(cntZeroCol[j])==1 || parseInt(cntZeroCol[j])==2) {
+                      if(parseInt(cntZeroCol[j])==1) {
                         assignmentTable[i][j]=1;
                         rowF[i]=-1;
                         colF[j]=-1;
@@ -546,7 +602,31 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
               }
             }
 
-            
+            for(var i = 0; i < block; i++) {
+              for(var j = 0; j < block; j++) {
+                if(parseInt(data[i][j])==0) {
+                  if(parseInt(rowF[i])==0 && parseInt(colF[j])==0) {
+                    if(parseInt(cntZero[i])>=2) {
+                      if(parseInt(cntZeroCol[j])==2) {
+                        assignmentTable[i][j]=1;
+                        rowF[i]=-1;
+                        colF[j]=-1;
+                        cntZero[i]=0;
+                        cntZeroCol[j]=0;
+                        for (var k = 0; k < block; k++) {
+                          if(parseInt(data[k][j]==0)) {
+                            if(parseInt(cntZero[k])!=0) {
+                              cntZero[k]--;
+                            }                         
+                          }
+                        }
+                      }                     
+                    }
+                  }
+                }
+              }
+            }
+
 
             for(var i = 0; i < block; i++) {
               for(var j = 0; j < block; j++) {
@@ -686,7 +766,7 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
               }
 
               var cntTable=1;
-              var smallUncover=1000;
+              var smallUncover=10000;
 
               outer2 :
               for (var i = 0; i < block; i++) {
@@ -725,8 +805,12 @@ input[type="button"]:hover, input[type="button"]:focus,  #printAns:hover, #print
                       table='<tr id=\"'+id+i+'\"></tr>';
                       $("#result").append(table);
                       for (var j = 0; j < block; j++) {
-                        
-                          table='<td style="color: #f3630c;">'+data[i][j]+'</td>';
+                        var printValue;
+                        if(data[i][j]>10000) {
+                          printValue="-";
+                          table='<td>'+printValue+'</td>';
+                        }else {
+                          table='<td style="color: #f3630c;">'+data[i][j]+'</td>';}
                             
                         $("#"+id+i).append(table);
                       }
